@@ -9,11 +9,14 @@ In this work, we present FFB6D, a **F**ull **F**low **B**idirectional fusion net
 ## Results
 - Evaluation result on the YCB-Video dataset:
 <div align=center><img width="80%" src="figs/res_ycb.png"/></div>
+
 - Evaluation result on the LineMOD dataset:
 <div align=center><img width="80%" src="figs/res_lm.png"/></div>
+
 - Robustness upon occlusion:
 <div align=center><img width="50%" src="figs/occlusion.png"/></div>
-- Parameters and speed on one 2080Ti:
+
+- Model parameters and speed on one 2080Ti:
 <div align=center><img width="50%" src="figs/para_speed.png"/></div>
 
 ## Source Code
