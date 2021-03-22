@@ -1,0 +1,6 @@
+ycb/eval_results
+ycb/train_info
+ycb/checkpoints/*.tar
+linemod/eval_results
+linemod/train_info
+linemod/checkpoints/*.tar
