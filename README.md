@@ -142,25 +142,15 @@ year = {2020}
 
 ## Results
 - Evaluation result without any post refinement on the YCB-Video dataset:
-  <style type="text/css">
-  .tg  {border-collapse:collapse;border-spacing:0;}
-  .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-    overflow:hidden;padding:10px 5px;word-break:normal;}
-  .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-    font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-  .tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
-  .tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
-  .tg .tg-fymr{border-color:inherit;font-weight:bold;text-align:left;vertical-align:top}
-  </style>
   <table class="tg">
   <thead>
     <tr>
       <th class="tg-0pky"></th>
-      <th class="tg-c3ow" colspan="2">PoseCNN</th>
-      <th class="tg-c3ow" colspan="2">PointFusion</th>
-      <th class="tg-c3ow" colspan="2">DenseFusion</th>
-      <th class="tg-c3ow" colspan="2">PVN3D</th>
-      <th class="tg-c3ow" colspan="2">Our FFF6D</th>
+      <th class="tg-c3ow" colspan="2" style="text-align: center">PoseCNN</th>
+      <th class="tg-c3ow" colspan="2" style="text-align: center">PointFusion</th>
+      <th class="tg-c3ow" colspan="2" style="text-align: center">DenseFusion</th>
+      <th class="tg-c3ow" colspan="2" style="text-align: center">PVN3D</th>
+      <th class="tg-c3ow" colspan="2" style="text-align: center">Our FFF6D</th>
     </tr>
   </thead>
   <tbody>
@@ -187,30 +177,19 @@ year = {2020}
       <td class="tg-0pky">82.9</td>
       <td class="tg-0pky">95.5</td>
       <td class="tg-0pky">91.8</td>
-      <td class="tg-fymr">96.6</td>
-      <td class="tg-fymr">92.7</td>
+      <td class="tg-fymr" style="font-weight:bold">96.6</td>
+      <td class="tg-fymr" style="font-weight:bold">92.7</td>
     </tr>
   </tbody>
   </table>
 
 - Evaluation result on the LineMOD dataset:
-  <style type="text/css">
-  .tg  {border-collapse:collapse;border-spacing:0;}
-  .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-    overflow:hidden;padding:10px 5px;word-break:normal;}
-  .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-    font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-  .tg .tg-2b7s{text-align:right;vertical-align:bottom}
-  .tg .tg-7zrl{text-align:left;vertical-align:bottom}
-  .tg .tg-8d8j{text-align:center;vertical-align:bottom}
-  .tg .tg-j6zm{font-weight:bold;text-align:left;vertical-align:bottom}
-  </style>
   <table class="tg">
   <thead>
     <tr>
       <th class="tg-7zrl"></th>
-      <th class="tg-8d8j" colspan="3">RGB</th>
-      <th class="tg-8d8j" colspan="5">RGB-D</th>
+      <th class="tg-8d8j" colspan="3" style="text-align: center">RGB</th>
+      <th class="tg-8d8j" colspan="5" style="text-align: center">RGB-D</th>
     </tr>
   </thead>
   <tbody>
@@ -234,7 +213,7 @@ year = {2020}
       <td class="tg-7zrl">94.3 </td>
       <td class="tg-7zrl">98.7 </td>
       <td class="tg-7zrl">99.4 </td>
-      <td class="tg-j6zm">99.7 </td>
+      <td class="tg-j6zm" style="font-weight:bold">99.7</td>
     </tr>
   </tbody>
   </table>
@@ -243,14 +222,6 @@ year = {2020}
 <div align=center><img width="50%" src="figs/occlusion.png"/></div>
 
 - Model parameters and speed on the LineMOD dataset (one object / frame) with one 2080Ti GPU:
-  <style type="text/css">
-  .tg  {border-collapse:collapse;border-spacing:0;}
-  .tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-    overflow:hidden;padding:10px 5px;word-break:normal;}
-  .tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
-    font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-  .tg .tg-7zrl{text-align:left;vertical-align:bottom}
-  </style>
   <table class="tg">
   <thead>
     <tr>
