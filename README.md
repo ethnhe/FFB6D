@@ -1,7 +1,7 @@
 # FFB6D
 This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full Flow Biderectional Fusion Network for 6D Pose Estimation**. ([Arxiv](https://arxiv.org/abs/2103.02242))
 
-<p style="font-weight:600; font-size:23px">Table of Content</p>
+## Table of Content
 
 - [FFB6D](#ffb6d)
   - [Introduction](#introduction)
