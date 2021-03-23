@@ -11,7 +11,10 @@ import pickle as pkl
 from utils.basic_utils import Basic_Utils
 import scipy.io as scio
 import scipy.misc
-from cv2 import imshow, waitKey
+try:
+    from neupeak.utils.webcv2 import imshow, waitKey
+except:
+    from cv2 import imshow, waitKey
 import normalSpeed
 from models.RandLA.helper_tool import DataProcessing as DP
 
@@ -413,8 +416,8 @@ def main():
     )
     while True:
         # for cat in ['val', 'test']:
-        # for cat in ['test']:
-        for cat in ['train']:
+        # for cat in ['train']:
+        for cat in ['test']:
             datum = ds[cat].__getitem__(idx[cat])
             idx[cat] += 1
             K = datum['K']
@@ -436,12 +439,12 @@ def main():
                 rgb = bs_utils.draw_p2ds(
                     rgb, ctr_2ds, 4, (0, 0, 255)
                 )
-            imshow('{}_rgb'.format(cat), rgb)
-            cmd = waitKey(0)
-            if cmd == ord('q'):
-                exit()
-            else:
-                continue
+                imshow('{}_rgb'.format(cat), rgb)
+                cmd = waitKey(0)
+                if cmd == ord('q'):
+                    exit()
+                else:
+                    continue
 
 
 if __name__ == "__main__":
