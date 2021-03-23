@@ -4,6 +4,7 @@ This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full
 ## Table of Content
 
 - [FFB6D](#ffb6d)
+  - [Table of Content](#table-of-content)
   - [Introduction](#introduction)
   - [Installation](#installation)
   - [Code Structure](#code-structure)
@@ -12,6 +13,7 @@ This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full
     - [Training on the YCB-Video Dataset](#training-on-the-ycb-video-dataset)
     - [Evaluating on the YCB-Video Dataset](#evaluating-on-the-ycb-video-dataset)
   - [Results](#results)
+  - [Adaptation to New Dataset](#adaptation-to-new-dataset)
   - [To Do](#to-do)
   - [License](#license)
 
@@ -53,7 +55,7 @@ year = {2020}
   git clone https://github.com/NVIDIA/apex
   cd apex
   export TORCH_CUDA_ARCH_LIST="6.0;6.1;6.2;7.0;7.5"  # set the target architecture manually, suggested in issue https://github.com/NVIDIA/apex/issues/605#issuecomment-554453001
-  pip install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
+  pip3 install -v --disable-pip-version-check --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
   cd ..
   ```
 - Install [normalSpeed](https://github.com/hfutcgncas/normalSpeed), a fast and light-weight normal map estimator:
@@ -99,6 +101,14 @@ year = {2020}
     - **ffb6d/utils/meanshift_pytorch.py**: pytorch version of meanshift algorithm for 3D center point and keypoints voting. 
     - **ffb6d/utils/pvn3d_eval_utils_kpls.py**: Object pose esitimation from predicted center/keypoints offset and evaluation metrics.
     - **ffb6d/utils/ip_basic**: Image Processing for Basic Depth Completion from [ip_basic](https://github.com/kujason/ip_basic).
+    - **ffb6d/utils/dataset_tools**
+      - **ffb6d/utils/dataset_tools/DSTOOL_README.md**: README for dataset tools.
+      - **ffb6d/utils/dataset_tools/requirement.txt**: Python3 requirement for dataset tools.
+      - **ffb6d/utils/dataset_tools/gen_obj_info.py**: Generate object info, including SIFT-FPS 3d keypoints, radius etc.
+      - **ffb6d/utils/dataset_tools/rgbd_rnder_sift_kp3ds.py**: Render rgbd images from mesh and extract textured 3d keypoints (SIFT/ORB).
+      - **ffb6d/utils/dataset_tools/utils.py**: Basic utils for mesh, pose, image and system processing.
+      - **ffb6d/utils/dataset_tools/fps**: Furthest point sampling algorithm.
+      - **ffb6d/utils/dataset_tools/example_mesh**: Example mesh models.
   - **ffb6d/train_ycb.py**: Training & Evaluating code of FFB6D models for the YCB_Video dataset.
   - **ffb6d/train_ycb.sh**: Bash scripts to start the training on the YCB_Video dataset.
   - **ffb6d/test_ycb.sh**: Bash scripts to start the testing on the YCB_Video dataset.
@@ -128,7 +138,7 @@ year = {2020}
   ```
   The trained model checkpoints are stored in ``train_log/ycb/checkpoints/``
   
-  **A Tip for saving GPU memory**: you can open the mix precision mode to save GPU memory by passing parameters ```opt_level=O1``` to ```train_ycb.py```. The document for apex mix precision trainnig can be found [here](https://nvidia.github.io/apex/amp.html?highlight=opt_level).
+  **A tip for saving GPU memory**: you can open the mixed precision mode to save GPU memory by passing parameters ```opt_level=O1``` to ```train_ycb.py```. The document for apex mixed precision trainnig can be found [here](https://nvidia.github.io/apex/amp.html?highlight=opt_level).
 
 ### Evaluating on the YCB-Video Dataset
 - Start evaluating by:
@@ -250,9 +260,22 @@ year = {2020}
   </tbody>
   </table>
 
+## Adaptation to New Dataset
+- Install and generate required mesh info following [DSTOOL_README](./ffb6d/utils/dataset_tools/DSTOOL_README.md).
+- Modify info of your new dataset in ```FFB6D/ffb6d/common.py``` 
+- Write your dataset preprocess script following ```FFB6D/ffb6d/datasets/ycb/ycb_dataset.py```. Note that you should modify or call the function that get your model info, such as 3D keypoints, center points, and radius properly.
+- (**Very Important!**) Visualize and check if you process the data properly, eg, the projected keypoints and center point, the semantic label of each point, etc. For example, you can visualize the projected center point (red point) and selected keypoints (orange points) as follow by running ```python3 -m datasets.ycb.ycb_dataset```.
+  <div align=center><img width="60%" src="figs/shown_kp_ycb.png"/></div>
+
+- For inference, make sure that you load the 3D keypoints, center point, and radius of your objects in the object coordinate system properly in ```FFB6D/ffb6d/utils/pvn3d_eval_utils.py```.
+- Check that all setting are modified properly by using the ground truth information for evaluation. The result should be high and close to 100 if everything is correct. For example, testing ground truth on the YCB_Video dataset by passing ```-test_gt``` parameters to ```train_ycb.py``` will get results higher than 99.99:
+  ```
+  tst_mdl=train_log/ycb/checkpoints/FFB6D_best.pth.tar
+  python3 -m torch.distributed.launch --nproc_per_node=1 train_ycb.py --gpu '0' -eval_net -checkpoint $tst_mdl -test -test_pose -test_gt
+  ```
+
 ## To Do
 - Scripts and pre-trained models for LineMOD dataset.
-- Guild for Adaptation to new datasets.
 
 ## License
 Licensed under the [MIT License](./LICENSE).

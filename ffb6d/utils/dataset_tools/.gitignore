@@ -1,0 +1,9 @@
+__pycache__
+*/__pycache__
+*/*/__pycache__
+*.so
+*.obj
+*.pkl
+fps/*.so
+raster_triangle/
+
