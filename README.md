@@ -5,19 +5,20 @@ This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full
 
 - [FFB6D](#ffb6d)
   - [Table of Content](#table-of-content)
-  - [Introduction](#introduction)
+  - [Introduction & Citation](#introduction--citation)
   - [Installation](#installation)
   - [Code Structure](#code-structure)
   - [Datasets](#datasets)
   - [Training and evaluating](#training-and-evaluating)
     - [Training on the YCB-Video Dataset](#training-on-the-ycb-video-dataset)
     - [Evaluating on the YCB-Video Dataset](#evaluating-on-the-ycb-video-dataset)
+    - [Demo/visualization on the YCB-Video Dataset](#demovisualization-on-the-ycb-video-dataset)
   - [Results](#results)
   - [Adaptation to New Dataset](#adaptation-to-new-dataset)
   - [To Do](#to-do)
   - [License](#license)
 
-## Introduction
+## Introduction & Citation
 <div align=center><img width="100%" src="figs/FFB6D_overview.png"/></div>
 
 [FFB6D](https://arxiv.org/abs/2103.02242v1) is a general framework for representation learning from a single RGBD image, and we applied it to the 6D pose estimation task by cascading downstream prediction headers for instance semantic segmentation and 3D keypoint voting prediction from PVN3D([Arxiv](https://arxiv.org/abs/1911.04231), [Code](https://github.com/ethnhe/PVN3D), [Video](https://www.bilibili.com/video/av89408773/)). 
@@ -74,6 +75,9 @@ year = {2020}
   ```
 
 ## Code Structure
+<details>
+  <summary>[Click to expand]</summary>
+
 - **ffb6d**
   - **ffb6d/common.py**: Common configuration of dataset and models, eg. dataset path, keypoints path, batch size and so on.
   - **ffb6d/datasets**
@@ -110,8 +114,10 @@ year = {2020}
       - **ffb6d/utils/dataset_tools/fps**: Furthest point sampling algorithm.
       - **ffb6d/utils/dataset_tools/example_mesh**: Example mesh models.
   - **ffb6d/train_ycb.py**: Training & Evaluating code of FFB6D models for the YCB_Video dataset.
+  - **ffb6d/demo.py**: Demo code for visualization.
   - **ffb6d/train_ycb.sh**: Bash scripts to start the training on the YCB_Video dataset.
   - **ffb6d/test_ycb.sh**: Bash scripts to start the testing on the YCB_Video dataset.
+  - **ffb6d/demo_ycb.sh**: Bash scripts to start the demo on the YCB_Video_dataset.
   - **ffb6d/train_log**
     - **ffb6d/train_log/ycb**
       - **ffb6d/train_log/ycb/checkpoints/**: Storing trained checkpoints on the YCB_Video dataset.
@@ -119,6 +125,8 @@ year = {2020}
       - **ffb6d/train_log/ycb/train_info/**: Training log on the YCB_Video_dataset.
 - **requirement.txt**: python3 environment requirements for pip3 install.
 - **figs/**: Images shown in README.
+
+</details>
 
 ## Datasets
 - **YCB-Video:** Download the YCB-Video Dataset from [PoseCNN](https://rse-lab.cs.washington.edu/projects/posecnn/). Unzip it and link the unzipped```YCB_Video_Dataset``` to ```ffb6d/datasets/ycb/YCB_Video_Dataset```:
@@ -149,6 +157,15 @@ year = {2020}
   ```
   You can evaluate different checkpoints by revising the ``tst_mdl`` to the path of your target model.
 - **Pretrained model**: We provide our pre-trained models on onedrive, [here](https://hkustconnect-my.sharepoint.com/:u:/g/personal/yhebk_connect_ust_hk/EW7a5w-ytftLgexIyXuIcjwB4o0dWo1hMteMNlA1zgM7Wg?e=UE1WJs). Download the pre-trained model, move it to ``train_log/ycb/checkpoints/`` and modify ``tst_mdl`` for testing.
+
+### Demo/visualization on the YCB-Video Dataset
+- After training your model or downloading the pre-trained model, you can start the demo by:
+  ```shell
+  # commands in demo_ycb.sh
+  tst_mdl=train_log/ycb/checkpoints/FFB6D_best.pth.tar
+  python3 -m demo -checkpoint $tst_mdl -dataset ycb
+  ```
+  The visualization results will be stored in ```train_log/ycb/eval_results/pose_vis```.
 
 ## Results
 - Evaluation result without any post refinement on the YCB-Video dataset:
