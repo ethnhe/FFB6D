@@ -582,7 +582,7 @@ class Basic_Utils():
                 cls = self.config.lm_id2obj_dict[cls]
         try:
             use_orbfps = self.config.use_orbfps
-        except:
+        except Exception:
             use_orbfps = False
         if ds_type == "ycb":
             if cls in self.ycb_cls_kps_dict.keys():
