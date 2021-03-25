@@ -159,7 +159,7 @@ def checkpoint_state(model=None, optimizer=None, best_prec=None, epoch=None, it=
 
 def save_checkpoint(
         state, is_best, filename="checkpoint", bestname="model_best",
-        bestname_pure='pvn3d_best'
+        bestname_pure='ffb6d_best'
 ):
     filename = "{}.pth.tar".format(filename)
     torch.save(state, filename)
@@ -448,7 +448,8 @@ class Trainer(object):
         print("Totally train %d iters per gpu." % tot_iter)
 
         def is_to_eval(epoch, it):
-            # return True, 1
+            if it == 100:
+                return True, 1
             wid = tot_iter // clr_div
             if (it // wid) % 2 == 1:
                 eval_frequency = wid // 15
@@ -460,7 +461,7 @@ class Trainer(object):
         it = start_it
         _, eval_frequency = is_to_eval(0, it)
 
-        with tqdm.tqdm(range(config.n_total_epoch), desc="epochs") as tbar, tqdm.tqdm(
+        with tqdm.tqdm(range(config.n_total_epoch), desc="%s_epochs" % args.cls) as tbar, tqdm.tqdm(
             total=eval_frequency, leave=False, desc="train"
         ) as pbar:
 
@@ -520,7 +521,8 @@ class Trainer(object):
                                     ),
                                     is_best,
                                     filename=self.checkpoint_name,
-                                    bestname=self.best_name+'_%.4f' % val_loss
+                                    bestname=self.best_name+'_%.4f' % val_loss,
+                                    bestname_pure=self.best_name
                                 )
                                 info_p = self.checkpoint_name.replace(
                                     '.pth.tar', '_epoch.txt'
@@ -666,8 +668,8 @@ def train():
         model,
         model_fn,
         optimizer,
-        checkpoint_name=os.path.join(checkpoint_fd, "resvox"),
-        best_name=os.path.join(checkpoint_fd, "resvox_best"),
+        checkpoint_name=os.path.join(checkpoint_fd, "FFB6D_%s" % args.cls),
+        best_name=os.path.join(checkpoint_fd, "FFB6D_%s_best" % args.cls),
         lr_scheduler=lr_scheduler,
         bnm_scheduler=bnm_scheduler,
     )

@@ -149,7 +149,7 @@ def checkpoint_state(model=None, optimizer=None, best_prec=None, epoch=None, it=
 
 def save_checkpoint(
         state, is_best, filename="checkpoint", bestname="model_best",
-        bestname_pure='pvn3d_best'
+        bestname_pure='ffb6d_best'
 ):
     filename = "{}.pth.tar".format(filename)
     torch.save(state, filename)
@@ -495,7 +495,8 @@ class Trainer(object):
                                     ),
                                     is_best,
                                     filename=self.checkpoint_name,
-                                    bestname=self.best_name+'_%.4f' % val_loss
+                                    bestname=self.best_name+'_%.4f' % val_loss,
+                                    bestname_pure=self.best_name
                                 )
                                 info_p = self.checkpoint_name.replace(
                                     '.pth.tar', '_epoch.txt'
