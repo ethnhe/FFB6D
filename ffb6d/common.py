@@ -128,7 +128,7 @@ class Config:
             )
             self.use_orbfps = True
             self.kp_orbfps_dir = 'datasets/linemod/kps_orb9_fps/'
-            self.kp_orbfps_ptn = os.path.join(self.kp_dir, '%s_%d_kps.txt')
+            self.kp_orbfps_ptn = os.path.join(self.kp_orbfps_dir, '%s_%d_kps.txt')
             # FPS
             self.lm_fps_kps_dir = os.path.abspath(
                 os.path.join(self.exp_dir, 'datasets/linemod/lm_obj_kps/')
