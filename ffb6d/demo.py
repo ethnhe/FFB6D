@@ -69,7 +69,13 @@ def load_checkpoint(model=None, optimizer=None, filename="checkpoint"):
     it = checkpoint.get("it", 0.0)
     best_prec = checkpoint.get("best_prec", None)
     if model is not None and checkpoint["model_state"] is not None:
-        model.load_state_dict(checkpoint["model_state"])
+        ck_st = checkpoint['model_state']
+        if 'module' in list(ck_st.keys())[0]:
+            tmp_ck_st = {}
+            for k, v in ck_st.items():
+                tmp_ck_st[k.replace("module.", "")] = v
+            ck_st = tmp_ck_st
+        model.load_state_dict(ck_st)
     if optimizer is not None and checkpoint["optimizer_state"] is not None:
         optimizer.load_state_dict(checkpoint["optimizer_state"])
     print("==> Done")
@@ -130,8 +136,12 @@ def cal_view_pred_pose(model, data, epoch=0, obj_id=-1):
         vis_dir = os.path.join(config.log_eval_dir, "pose_vis")
         ensure_fd(vis_dir)
         f_pth = os.path.join(vis_dir, "{}.jpg".format(epoch))
-        bgr = np_rgb[:, :, ::-1]
-        ori_bgr = ori_rgb[:, :, ::-1]
+        if args.dataset == 'ycb':
+            bgr = np_rgb
+            ori_bgr = ori_rgb
+        else:
+            bgr = np_rgb[:, :, ::-1]
+            ori_bgr = ori_rgb[:, :, ::-1]
         cv2.imwrite(f_pth, bgr)
         if args.show:
             imshow("projected_pose_rgb", bgr)
@@ -161,7 +171,6 @@ def main():
     model.cuda()
 
     # load status from checkpoint
-    model = nn.DataParallel(model)
     if args.checkpoint is not None:
         load_checkpoint(
             model, None, filename=args.checkpoint[:-8]

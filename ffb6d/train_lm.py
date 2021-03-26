@@ -138,7 +138,8 @@ def get_lr(optimizer):
 def checkpoint_state(model=None, optimizer=None, best_prec=None, epoch=None, it=None):
     optim_state = optimizer.state_dict() if optimizer is not None else None
     if model is not None:
-        if isinstance(model, torch.nn.DataParallel):
+        if isinstance(model, torch.nn.DataParallel) or \
+                isinstance(model, torch.nn.parallel.DistributedDataParallel):
             model_state = model.module.state_dict()
         else:
             model_state = model.state_dict()
@@ -176,8 +177,13 @@ def load_checkpoint(model=None, optimizer=None, filename="checkpoint"):
         it = ck.get("it", 0.0)
         best_prec = ck.get("best_prec", None)
         if model is not None and ck["model_state"] is not None:
-            print("loading state")
-            model.load_state_dict(ck["model_state"])
+            ck_st = ck['model_state']
+            if 'module' in list(ck_st.keys())[0]:
+                tmp_ck_st = {}
+                for k, v in ck_st.items():
+                    tmp_ck_st[k.replace("module.", "")] = v
+                ck_st = tmp_ck_st
+            model.load_state_dict(ck_st)
         if optimizer is not None and ck["optimizer_state"] is not None:
             optimizer.load_state_dict(ck["optimizer_state"])
         if ck.get("amp", None) is not None:
@@ -603,7 +609,6 @@ def train():
     # load status from checkpoint
     if args.checkpoint is not None:
         if args.eval_net:
-            model = nn.DataParallel(model)
             checkpoint_status = load_checkpoint(
                 model, None, filename=args.checkpoint[:-8]
             )
