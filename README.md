@@ -10,12 +10,14 @@ This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full
   - [Code Structure](#code-structure)
   - [Datasets](#datasets)
   - [Training and evaluating](#training-and-evaluating)
+    - [Training on the LineMOD Dataset](#training-on-the-linemod-dataset)
+    - [Evaluating on the LineMOD Dataset](#evaluating-on-the-linemod-dataset)
+    - [Demo/visualizaion on the LineMOD Dataset](#demovisualizaion-on-the-linemod-dataset)
     - [Training on the YCB-Video Dataset](#training-on-the-ycb-video-dataset)
     - [Evaluating on the YCB-Video Dataset](#evaluating-on-the-ycb-video-dataset)
     - [Demo/visualization on the YCB-Video Dataset](#demovisualization-on-the-ycb-video-dataset)
   - [Results](#results)
   - [Adaptation to New Dataset](#adaptation-to-new-dataset)
-  - [To Do](#to-do)
   - [License](#license)
 
 ## Introduction & Citation
@@ -81,9 +83,14 @@ year = {2020}
 - **ffb6d**
   - **ffb6d/common.py**: Common configuration of dataset and models, eg. dataset path, keypoints path, batch size and so on.
   - **ffb6d/datasets**
+    - **ffb6d/datasets/linemod/**
+      - **ffb6d/datasets/linemod/linemod_dataset.py**: Data loader for LineMOD dataset.
+      - **ffb6d/datasets/linemod/dataset_config/models_info.yml**: Object model info of LineMOD dataset.
+      - **ffb6d/datasets/linemod/kps_orb9_fps**
+        - **ffb6d/datasets/linemod/kps_orb9_fps/{obj_name}_8_kps.txt**: ORB-FPS 3D keypoints of an object in the object coordinate system.
+        - **ffb6d/datasets/linemod/kps_orb9_fps/{obj_name}_corners.txt**: 8 corners of the 3D bounding box of an object in the object coordinate system.
     - **ffb6d/datasets/ycb**
       - **ffb6d/datasets/ycb/ycb_dataset.py**： Data loader for YCB_Video dataset.
-      - **ffb6d/datasets/ycb/dataset_config**
         - **ffb6d/datasets/ycb/dataset_config/classes.txt**: Object list of YCB_Video dataset.
         - **ffb6d/datasets/ycb/dataset_config/radius.txt**: Radius of each object in YCB_Video dataset.
         - **ffb6d/datasets/ycb/dataset_config/train_data_list.txt**: Training set of YCB_Video datset.
@@ -118,6 +125,10 @@ year = {2020}
   - **ffb6d/train_ycb.sh**: Bash scripts to start the training on the YCB_Video dataset.
   - **ffb6d/test_ycb.sh**: Bash scripts to start the testing on the YCB_Video dataset.
   - **ffb6d/demo_ycb.sh**: Bash scripts to start the demo on the YCB_Video_dataset.
+  - **ffb6d/train_lm.py**: Training & Evaluating code of FFB6D models for the LineMOD dataset.
+  - **ffb6d/train_lm.sh**: Bash scripts to start the training on the LineMOD dataset.
+  - **ffb6d/test_lm.sh**: Bash scripts to start the testing on the LineMOD dataset.
+  - **ffb6d/demo_lm.sh**: Bash scripts to start the demo on the LineMOD dataset.
   - **ffb6d/train_log**
     - **ffb6d/train_log/ycb**
       - **ffb6d/train_log/ycb/checkpoints/**: Storing trained checkpoints on the YCB_Video dataset.
@@ -129,6 +140,12 @@ year = {2020}
 </details>
 
 ## Datasets
+- **LineMOD:** Download the preprocessed LineMOD dataset from [onedrive link](https://hkustconnect-my.sharepoint.com/:u:/g/personal/yhebk_connect_ust_hk/ETW6iYHDbo1OsIbNJbyNBkABF7uJsuerB6c0pAiiIv6AHw?e=eXM1UE) or [google drive link](https://drive.google.com/drive/folders/19ivHpaKm9dOrr12fzC8IDFczWRPFxho7) (refer from [DenseFusion](https://github.com/j96w/DenseFusion)). Unzip it and link the unzipped ``Linemod_preprocessed/`` to ``ffb6d/datasets/linemod/Linemod_preprocessed``:
+  ```shell
+  ln -s path_to_unzipped_Linemod_preprocessed ffb6d/dataset/linemod/
+  ```
+  Generate rendered and fused data following [raster_triangle](https://github.com/ethnhe/raster_triangle).
+
 - **YCB-Video:** Download the YCB-Video Dataset from [PoseCNN](https://rse-lab.cs.washington.edu/projects/posecnn/). Unzip it and link the unzipped```YCB_Video_Dataset``` to ```ffb6d/datasets/ycb/YCB_Video_Dataset```:
 
   ```shell
@@ -136,6 +153,38 @@ year = {2020}
   ```
 
 ## Training and evaluating
+
+### Training on the LineMOD Dataset
+- Train the model for the target object. Take object ape for example:
+  ```shell
+  cd ffb6d
+  # commands in train_lm.sh
+  n_gpu=8
+  cls='ape'
+  python3 -m torch.distributed.launch --nproc_per_node=$n_gpu train_lm.py --gpus=$n_gpu --cls=$cls
+  ```
+  The trained checkpoints are stored in ``train_log/linemod/checkpoints/{cls}/``, ``train_log/linemod/checkpoints/ape/`` in this example.
+
+### Evaluating on the LineMOD Dataset
+- Start evaluation by:
+  ```shell
+  # commands in test_lm.sh
+  cls='ape'
+  tst_mdl="./linemod_pretrained/FFB6D_${cls}_best.pth.tar"
+  python3 -m torch.distributed.launch --nproc_per_node=1 train_lm.py --gpu '0' --cls $cls -eval_net -checkpoint $tst_mdl -test -test_pose # -debug
+  ```
+  You can evaluate different checkpoint by revising ``tst_mdl`` to the path of your target model.
+- **Pretrained model**: We provide our pre-trained models for each object on onedrive, [link](https://hkustconnect-my.sharepoint.com/:f:/g/personal/yhebk_connect_ust_hk/Ehg--MMyNdtLnAEurN0tm_MBQ8u_Lntrl42-BQeXO_8H8Q?e=HsZ2Yi). (The provided pretrained model here get better performance than we reported in our paper, mean ADD-0.1d 99.8). Download them and move them to their according folders. For example, move the ``FFB6D_ape_best.pth.tar`` to ``train_log/linemod/checkpoints/ape/``. Then revise ``tst_mdl=train_log/linemod/checkpoints/ape/FFB6D_ape_best.path.tar`` for testing.
+
+### Demo/visualizaion on the LineMOD Dataset
+- After training your models or downloading the pre-trained models, you can start the demo by:
+  ```shell
+  # commands in demo_lm.sh
+  cls='ape'
+  tst_mdl=train_log/linemod/checkpoints/${cls}/FFB6D_${cls}_best.pth.tar
+  python3 -m demo -dataset linemod -checkpoint $tst_mdl -cls $cls -show
+  ```
+  The visualization results will be stored in ``train_log/linemod/eval_results/{cls}/pose_vis``
 
 ### Training on the YCB-Video Dataset
 - Start training on the YCB-Video Dataset by:
@@ -290,9 +339,6 @@ year = {2020}
   tst_mdl=train_log/ycb/checkpoints/FFB6D_best.pth.tar
   python3 -m torch.distributed.launch --nproc_per_node=1 train_ycb.py --gpu '0' -eval_net -checkpoint $tst_mdl -test -test_pose -test_gt
   ```
-
-## To Do
-- Scripts and pre-trained models for LineMOD dataset.
 
 ## License
 Licensed under the [MIT License](./LICENSE).
