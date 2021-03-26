@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import os
 import cv2
-import pcl
 import torch
 import os.path
 import numpy as np
@@ -14,6 +13,7 @@ import yaml
 import scipy.io as scio
 import scipy.misc
 from glob import glob
+from termcolor import colored
 import normalSpeed
 from models.RandLA.helper_tool import DataProcessing as DP
 try:
@@ -56,12 +56,22 @@ class Dataset():
             )
             self.rnd_lst = glob(rnd_img_ptn)
             print("render data length: ", len(self.rnd_lst))
+            if len(self.rnd_lst) == 0:
+                warning = "Warning: "
+                warning += "Trainnig without rendered data will hurt model performance \n"
+                warning += "Please generate rendered data from https://github.com/ethnhe/raster_triangle.\n"
+                print(colored(warning, "red", attrs=['bold']))
 
             fuse_img_ptn = os.path.join(
                 self.root, 'fuse/%s/*.pkl' % cls_type
             )
             self.fuse_lst = glob(fuse_img_ptn)
             print("fused data length: ", len(self.fuse_lst))
+            if len(self.fuse_lst) == 0:
+                warning = "Warning: "
+                warning += "Trainnig without fused data will hurt model performance \n"
+                warning += "Please generate fused data from https://github.com/ethnhe/raster_triangle.\n"
+                print(colored(warning, "red", attrs=['bold']))
 
             self.all_lst = self.real_lst + self.rnd_lst + self.fuse_lst
             self.minibatch_per_epoch = len(self.all_lst) // self.config.mini_batch_size
@@ -166,9 +176,10 @@ class Dataset():
             back = np.array(ri)[:, :, :3] * bk_label[:, :, None]
         dpt_back = real_dpt.astype(np.float32) * bk_label.astype(np.float32)
 
-        msk_back = (labels <= 0).astype(rgb.dtype)
-        msk_back = msk_back[:, :, None]
-        rgb = rgb * (msk_back == 0).astype(rgb.dtype) + back * msk_back
+        if self.rng.rand() < 0.6:
+            msk_back = (labels <= 0).astype(rgb.dtype)
+            msk_back = msk_back[:, :, None]
+            rgb = rgb * (msk_back == 0).astype(rgb.dtype) + back * msk_back
 
         dpt = dpt * (dpt_msk > 0).astype(dpt.dtype) + \
             dpt_back * (dpt_msk <= 0).astype(dpt.dtype)
@@ -346,12 +357,11 @@ class Dataset():
             for ip, xyz in enumerate(xyz_lst):
                 pcld = xyz.reshape(3, -1).transpose(1, 0)
                 p2ds = self.bs_utils.project_p3d(pcld, cam_scale, K)
-                print(show_rgb.shape, pcld.shape)
                 srgb = self.bs_utils.paste_p2ds(show_rgb.copy(), p2ds, (0, 0, 255))
-                imshow("rz_pcld_%d" % ip, srgb)
+                # imshow("rz_pcld_%d" % ip, srgb)
                 p2ds = self.bs_utils.project_p3d(inputs['cld_xyz%d'%ip], cam_scale, K)
                 srgb1 = self.bs_utils.paste_p2ds(show_rgb.copy(), p2ds, (0, 0, 255))
-                imshow("rz_pcld_%d_rnd" % ip, srgb1)
+                # imshow("rz_pcld_%d_rnd" % ip, srgb1)
         # print(
         #     "kp3ds:", kp3ds.shape, kp3ds, "\n",
         #     "kp3ds.mean:", np.mean(kp3ds, axis=0), "\n",
@@ -444,8 +454,9 @@ class Dataset():
 def main():
     # config.mini_batch_size = 1
     ds = {}
-    ds['train'] = Dataset('train', 'duck', DEBUG=True)
-    ds['test'] = Dataset('test', 'duck', DEBUG=True)
+    cls = 'duck'
+    ds['train'] = Dataset('train', cls, DEBUG=True)
+    ds['test'] = Dataset('test', cls, DEBUG=True)
     idx = dict(
         train=0,
         val=0,
@@ -463,7 +474,7 @@ def main():
             for i in range(22):
                 pcld = datum['cld_rgb_nrm'][:3, :].transpose(1, 0).copy()
                 p2ds = ds[cat].bs_utils.project_p3d(pcld, cam_scale, K)
-                rgb = ds[cat].bs_utils.draw_p2ds(rgb, p2ds)
+                # rgb = ds[cat].bs_utils.draw_p2ds(rgb, p2ds)
                 kp3d = datum['kp_3ds'][i]
                 if kp3d.sum() < 1e-6:
                     break

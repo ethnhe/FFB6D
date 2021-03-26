@@ -75,17 +75,21 @@ parser.add_argument(
 parser.add_argument(
     "-eval_net", action='store_true', help="whether is to eval net."
 )
-
 parser.add_argument(
     '--cls', type=str, default="ape",
     help="Target object. (ape, benchvise, cam, can, cat, driller," +
     "duck, eggbox, glue, holepuncher, iron, lamp, phone)"
 )
 parser.add_argument(
-    '--test_occ',
-    action="store_true",
-    help="To eval occlusion linemod or not."
+    '--test_occ', action="store_true", help="To eval occlusion linemod or not."
 )
+parser.add_argument("-test", action="store_true")
+parser.add_argument("-test_pose", action="store_true")
+parser.add_argument("-test_gt", action="store_true")
+parser.add_argument("-cal_metrics", action="store_true")
+parser.add_argument("-view_dpt", action="store_true")
+parser.add_argument('-debug', action='store_true')
+
 parser.add_argument('--local_rank', type=int, default=0)
 parser.add_argument('--gpu_id', type=list, default=[0, 1, 2, 3, 4, 5, 6, 7])
 parser.add_argument('-n', '--nodes', default=1, type=int, metavar='N')
@@ -95,17 +99,11 @@ parser.add_argument('-nr', '--nr', default=0, type=int,
                     help='ranking within the nodes')
 parser.add_argument('--epochs', default=2, type=int,
                     metavar='N', help='number of total epochs to run')
-
-parser.add_argument("-test", action="store_true")
-parser.add_argument("-test_pose", action="store_true")
-parser.add_argument("-test_gt", action="store_true")
-parser.add_argument("-cal_metrics", action="store_true")
-parser.add_argument("-view_dpt", action="store_true")
-parser.add_argument('-debug', action='store_true')
-
 parser.add_argument('--gpu', type=str, default="0,1,2,3,4,5,6,7")
 parser.add_argument('--deterministic', action='store_true')
 parser.add_argument('--keep_batchnorm_fp32', default=True)
+parser.add_argument('--opt_level', default="O0", type=str,
+                    help='opt level of apex mix presision trainig.')
 args = parser.parse_args()
 
 os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
@@ -406,7 +404,7 @@ class Trainer(object):
                 )
             seg_res_fn = 'seg_res'
             for k, v in acc_dict.items():
-                seg_res_fn += '_%s%.2f'.format(k, v)
+                seg_res_fn += '_%s%.2f' % (k, v)
             with open(os.path.join(config.log_eval_dir, seg_res_fn), 'w') as of:
                 for k, v in acc_dict.items():
                     print(k, v, file=of)
@@ -556,8 +554,6 @@ def train():
     torch.distributed.init_process_group(
         backend='nccl',
         init_method='env://',
-        # world_size=args.world_size,
-        # rank=rank
     )
     torch.manual_seed(0)
 
@@ -584,7 +580,7 @@ def train():
 
     rndla_cfg = ConfigRandLA
     model = FFB6D(
-        n_classes=config.n_objects,  n_pts=config.n_sample_points, rndla_cfg=rndla_cfg,
+        n_classes=config.n_objects, n_pts=config.n_sample_points, rndla_cfg=rndla_cfg,
         n_kps=config.n_keypoints
     )
     model = convert_syncbn_model(model)
@@ -594,7 +590,7 @@ def train():
     optimizer = optim.Adam(
         model.parameters(), lr=args.lr, weight_decay=args.weight_decay
     )
-    opt_level = 'O0'
+    opt_level = args.opt_level
     model, optimizer = amp.initialize(
         model, optimizer, opt_level=opt_level,
     )
@@ -621,10 +617,6 @@ def train():
             assert checkpoint_status is not None, "Failed loadding model."
 
     if not args.eval_net:
-        # model = nn.DataParallel(
-        #     model
-        # )
-        # model = DistributedDataParallel(model, delay_allreduce=True)
         model = torch.nn.parallel.DistributedDataParallel(
             model, device_ids=[args.local_rank], output_device=args.local_rank,
             find_unused_parameters=True

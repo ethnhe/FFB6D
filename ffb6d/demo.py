@@ -17,7 +17,7 @@ import pickle as pkl
 from common import Config, ConfigRandLA
 from models.ffb6d import FFB6D
 from datasets.ycb.ycb_dataset import Dataset as YCB_Dataset
-# from datasets.linemod.linemod_dataset import Dataset as LM_Dataset
+from datasets.linemod.linemod_dataset import Dataset as LM_Dataset
 from utils.pvn3d_eval_utils_kpls import cal_frame_poses, cal_frame_poses_lm
 from utils.basic_utils import Basic_Utils
 try:
@@ -38,6 +38,9 @@ parser.add_argument(
     "-cls", type=str, default="ape",
     help="Target object to eval in LineMOD dataset. (ape, benchvise, cam, can," +
     "cat, driller, duck, eggbox, glue, holepuncher, iron, lamp, phone)"
+)
+parser.add_argument(
+    "-show", action='store_true', help="View from imshow or not."
 )
 args = parser.parse_args()
 
@@ -127,10 +130,13 @@ def cal_view_pred_pose(model, data, epoch=0, obj_id=-1):
         vis_dir = os.path.join(config.log_eval_dir, "pose_vis")
         ensure_fd(vis_dir)
         f_pth = os.path.join(vis_dir, "{}.jpg".format(epoch))
-        cv2.imwrite(f_pth, np_rgb)
-        # imshow("projected_pose_rgb", np_rgb)
-        # imshow("ori_rgb", ori_rgb)
-        # waitKey(0)
+        bgr = np_rgb[:, :, ::-1]
+        ori_bgr = ori_rgb[:, :, ::-1]
+        cv2.imwrite(f_pth, bgr)
+        if args.show:
+            imshow("projected_pose_rgb", bgr)
+            imshow("original_rgb", ori_bgr)
+            waitKey()
     if epoch == 0:
         print("\n\nResults saved in {}".format(vis_dir))
 
