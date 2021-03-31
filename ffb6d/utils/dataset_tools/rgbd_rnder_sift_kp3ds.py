@@ -12,12 +12,7 @@ from random import shuffle
 from tqdm import tqdm
 from scipy import stats
 from glob import glob
-
-try:
-    from neupeak.utils.webcv2 import imshow, waitKey
-except Exception:
-    from cv2 import imshow, waitKey
-
+from cv2 import imshow, waitKey
 from utils import ImgPcldUtils, MeshUtils, PoseUtils, SysUtils
 
 
