@@ -20,7 +20,7 @@ class MeshUtils():
     def __init__(self):
         pass
 
-    def read_xyz_from_obj(self, pth):
+    def get_p3ds_from_obj(self, pth, scale2m=1.):
         xyz_lst = []
         with open(pth, 'r') as f:
             for line in f.readlines():
@@ -30,9 +30,9 @@ class MeshUtils():
                     item.strip() for item in line.split(' ')
                     if len(item.strip()) > 0 and 'v' not in item
                 ]
-                xyz = np.array(items[0:3]).astype(np.float)
+                xyz = np.array(xyz_str[0:3]).astype(np.float)
                 xyz_lst.append(xyz)
-        return np.array(xyz_lst)
+        return np.array(xyz_lst) / scale2m
 
     def load_ply_model(self, model_path, scale2m=1., ret_dict=True):
         ply = PlyData.read(model_path)
@@ -73,6 +73,12 @@ class MeshUtils():
         p3ds = p3ds / float(scale2m)
         print("finish loading ply.")
         return p3ds
+
+    def get_p3ds_from_mesh(self, mesh_pth, scale2m=1.0):
+        if '.ply' in mesh_pth:
+            return self.get_p3ds_from_ply(mesh_pth, scale2m=scale2m)
+        else:
+            return self.get_p3ds_from_obj(mesh_pth, scale2m=scale2m)
 
     # Read object vertexes from text file
     def get_p3ds_from_txt(self, pxyz_pth):
@@ -124,6 +130,15 @@ class ImgPcldUtils():
                 img, (p2d[0], p2d[1]), r, color, -1
             )
         return img
+
+    def project_p3ds(self, p3d, cam_scale=1000.0, K=None):
+        p3d = p3d * cam_scale
+        p2d = np.dot(p3d, K.T)
+        p2d_3 = p2d[:, 2]
+        p2d_3[np.where(p2d_3 < 1e-8)] = 1.0
+        p2d[:, 2] = p2d_3
+        p2d = np.around((p2d[:, :2] / p2d[:, 2:])).astype(np.int32)
+        return p2d
 
     def dpt_2_cld(self, dpt, cam_scale, K):
         h, w = dpt.shape[0], dpt.shape[1]
