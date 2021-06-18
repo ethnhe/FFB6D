@@ -8,7 +8,6 @@ import pickle as pkl
 from fps.fps_utils import farthest_point_sampling
 from argparse import ArgumentParser
 from utils import MeshUtils, ImgPcldUtils, SysUtils
-from rgbd_rnder_sift_kp3ds import extract_textured_kp3ds
 
 
 parser = ArgumentParser()
@@ -16,7 +15,7 @@ parser.add_argument(
     "--obj_name", type=str, default="ape", help="Object name."
 )
 parser.add_argument(
-    "--ply_pth", type=str, default="example_mesh/ape.ply",
+    "--obj_pth", type=str, default="example_mesh/ape.ply",
     help="path to object ply."
 )
 parser.add_argument(
@@ -59,11 +58,22 @@ parser.add_argument(
     '--textured_3dkps_fd', type=str, default="textured_3D_keypoints",
     help="folder to store textured 3D keypoints."
 )
+parser.add_argument(
+    '--use_pyrender', action='store_true',
+    help="use pyrender or raster_triangle"
+)
 parser.print_help()
 args = parser.parse_args()
 
 mesh_utils = MeshUtils()
 sys_utils = SysUtils()
+
+print(args)
+
+if args.use_pyrender:
+    from pyrender_sift_kp3ds import extract_textured_kp3ds
+else:
+    from rgbd_rnder_sift_kp3ds import extract_textured_kp3ds
 
 
 # Read object vertexes from text file
@@ -79,10 +89,10 @@ def get_farthest_3d(p3ds, num=8, init_center=False):
 
 
 # Compute and save all mesh info
-def gen_one_mesh_info(args, ply_pth, sv_fd):
+def gen_one_mesh_info(args, obj_pth, sv_fd):
     sys_utils.ensure_dir(sv_fd)
 
-    p3ds = mesh_utils.get_p3ds_from_ply(ply_pth, scale2m=args.scale2m)
+    p3ds = mesh_utils.get_p3ds_from_mesh(obj_pth, scale2m=args.scale2m)
 
     c3ds = mesh_utils.get_3D_bbox(p3ds)
     c3ds_pth = os.path.join(sv_fd, "%s_corners.txt" % args.obj_name)
@@ -106,7 +116,7 @@ def gen_one_mesh_info(args, ply_pth, sv_fd):
         for p3d in fps:
             print(p3d[0], p3d[1], p3d[2], file=of)
 
-    textured_kp3ds = np.array(extract_textured_kp3ds(args, args.ply_pth))
+    textured_kp3ds = np.array(extract_textured_kp3ds(args, args.obj_pth))
     print(p3ds.shape, textured_kp3ds.shape)
     textured_fps = get_farthest_3d(textured_kp3ds, num=args.n_keypoint)
     textured_fps_pth = os.path.join(sv_fd, "%s_%s_fps.txt" % (args.obj_name, args.extractor))
@@ -116,7 +126,7 @@ def gen_one_mesh_info(args, ply_pth, sv_fd):
 
 
 def main():
-    gen_one_mesh_info(args, args.ply_pth, args.sv_fd)
+    gen_one_mesh_info(args, args.obj_pth, args.sv_fd)
 
 
 if __name__ == "__main__":

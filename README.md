@@ -1,11 +1,12 @@
 # FFB6D
-This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full Flow Biderectional Fusion Network for 6D Pose Estimation**. ([Arxiv](https://arxiv.org/abs/2103.02242))
+This is the official source code for the **CVPR2021 Oral** work, **FFB6D: A Full Flow Biderectional Fusion Network for 6D Pose Estimation**. ([Arxiv](https://arxiv.org/abs/2103.02242), [Video_Bilibili](https://www.bilibili.com/video/BV1YU4y1a7Kp?from=search&seid=8306279574921937158), [Video_YouTube](https://www.youtube.com/watch?v=SSi2TnyD6Is))
 
 ## Table of Content
 
 - [FFB6D](#ffb6d)
   - [Table of Content](#table-of-content)
   - [Introduction & Citation](#introduction--citation)
+  - [Demo Video](#demo-video)
   - [Installation](#installation)
   - [Code Structure](#code-structure)
   - [Datasets](#datasets)
@@ -46,7 +47,8 @@ year = {2020}
 }
 ```
 
-
+## Demo Video
+See our demo video on [YouTube](https://www.youtube.com/watch?v=SSi2TnyD6Is) or [bilibili](https://www.bilibili.com/video/BV1YU4y1a7Kp?from=search&seid=8306279574921937158).
 ## Installation
 - Install CUDA 10.1 / 10.2
 - Set up python3 environment from requirement.txt:
@@ -164,6 +166,9 @@ year = {2020}
   python3 -m torch.distributed.launch --nproc_per_node=$n_gpu train_lm.py --gpus=$n_gpu --cls=$cls
   ```
   The trained checkpoints are stored in ``train_log/linemod/checkpoints/{cls}/``, ``train_log/linemod/checkpoints/ape/`` in this example.
+  
+  **A tip for saving GPU memory**: you can open the mixed precision mode to save GPU memory by passing parameters ```opt_level=O1``` to ```train_lm.py```. The document for apex mixed precision trainnig can be found [here](https://nvidia.github.io/apex/amp.html?highlight=opt_level). If you use less than 8 GPU and the batch size is less than "3x8=24", it's recommended to use mixed precision trainning and increase the ```mini_batch_size``` in ```common.py``` as large as possible.
+
 
 ### Evaluating on the LineMOD Dataset
 - Start evaluation by:
@@ -195,7 +200,7 @@ year = {2020}
   ```
   The trained model checkpoints are stored in ``train_log/ycb/checkpoints/``
   
-  **A tip for saving GPU memory**: you can open the mixed precision mode to save GPU memory by passing parameters ```opt_level=O1``` to ```train_ycb.py```. The document for apex mixed precision trainnig can be found [here](https://nvidia.github.io/apex/amp.html?highlight=opt_level).
+  **A tip for saving GPU memory**: you can open the mixed precision mode to save GPU memory by passing parameters ```opt_level=O1``` to ```train_ycb.py```. The document for apex mixed precision trainnig can be found [here](https://nvidia.github.io/apex/amp.html?highlight=opt_level). If you use less than 8 GPU and the batch size is less than "3x8=24", it's recommended to use mixed precision trainning and increase the ```mini_batch_size``` in ```common.py``` as large as possible.
 
 ### Evaluating on the YCB-Video Dataset
 - Start evaluating by:
