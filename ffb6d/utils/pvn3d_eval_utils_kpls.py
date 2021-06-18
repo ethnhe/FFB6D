@@ -74,7 +74,7 @@ def cal_frame_poses(
     pred_ctr = pcld - ctr_of[0]
     pred_kp = pcld.view(1, n_pts, 3).repeat(n_kps, 1, 1) - pred_kp_of
 
-    radius = 0.08
+    radius = 0.04
     if use_ctr:
         cls_kps = torch.zeros(n_cls, n_kps+1, 3).cuda()
     else:
@@ -229,7 +229,7 @@ def cal_frame_poses_lm(
     pred_ctr = pcld - ctr_of[0]
     pred_kp = pcld.view(1, n_pts, 3).repeat(n_kps, 1, 1) - pred_kp_of
 
-    radius = 0.08
+    radius = 0.04
     if use_ctr:
         cls_kps = torch.zeros(n_cls, n_kps+1, 3).cuda()
     else:
