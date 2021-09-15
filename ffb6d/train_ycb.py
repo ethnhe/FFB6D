@@ -370,7 +370,7 @@ class Trainer(object):
 
         mean_eval_dict = {}
         acc_dict = {}
-        for k, v in eval_res.items():
+        for k, v in eval_dict.items():
             per = 100 if 'acc' in k else 1
             mean_eval_dict[k] = np.array(v).mean() * per
             if 'acc' in k:
