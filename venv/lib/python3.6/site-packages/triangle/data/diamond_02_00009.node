@@ -1,0 +1,29 @@
+#  diamond_02_00009.node
+#  created by hand for use with TRIANGLE.
+#
+#  File generated on 08 August 2003.
+#
+#  This set of data was set up simply to study the computation
+#  and reporting of the vertices of Voronoi cells.
+#
+#  In particular, the data was selected so that the point
+#
+#    ( 0.4, 0.5 )
+#
+#  has a Voronoi cell with vertices:
+#
+#    ( 0.3, 0.3 ), ( 0.5, 0.4 ), ( 0.5, 0.7 ), ( 0.3, 0.6 ).
+#
+#  Spatial dimension M =      2
+#  Number of points N =     9
+#
+  9    2  0  0
+  1  0.0  0.0
+  2  0.0  1.0
+  3  0.2  0.5
+  4  0.3  0.6
+  5  0.4  0.5
+  6  0.6  0.3
+  7  0.6  0.5
+  8  1.0  0.0
+  9  1.0  1.0

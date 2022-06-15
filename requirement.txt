@@ -9,7 +9,7 @@ Cython
 enum34
 future
 scipy==1.4.1
-opencv_contrib_python==3.4.2.16
+opencv_contrib_python~=3.4
 matplotlib==3.0.2
 transforms3d==0.3.1
 scikit_image==0.13.1

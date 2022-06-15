@@ -415,7 +415,9 @@ class Trainer(object):
                 for k, v in acc_dict.items():
                     print(k, v, file=of)
         if args.local_rank == 0:
-            writer.add_scalars('val_acc', acc_dict, it)
+            #Nachi: removed next line
+            #writer.add_scalars('val_acc', acc_dict, it)
+            pass
 
         return total_loss / count, eval_dict
 

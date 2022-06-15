@@ -1,7 +1,0 @@
-knn.pyx
-knn_.cxx
-setup.py
-KNN_NanoFLANN.egg-info/PKG-INFO
-KNN_NanoFLANN.egg-info/SOURCES.txt
-KNN_NanoFLANN.egg-info/dependency_links.txt
-KNN_NanoFLANN.egg-info/top_level.txt

@@ -136,7 +136,7 @@ class Config:
 
             lm_r_pth = os.path.join(self.lm_root, "dataset_config/models_info.yml")
             lm_r_file = open(os.path.join(lm_r_pth), "r")
-            self.lm_r_lst = yaml.load(lm_r_file)
+            self.lm_r_lst = yaml.load(lm_r_file, Loader=yaml.Loader)
 
             self.val_nid_ptn = "/data/6D_Pose_Data/datasets/LINEMOD/pose_nori_lists/{}_real_val.nori.list"
 
