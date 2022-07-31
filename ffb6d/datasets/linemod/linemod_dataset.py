@@ -52,7 +52,7 @@ class Dataset():
             self.real_lst = self.bs_utils.read_lines(real_img_pth)
 
             rnd_img_ptn = os.path.join(
-                self.root, 'renders/%s/*.pkl' % cls_type#Nachi: added 1
+                self.root, 'renders/%s/*99.pkl' % cls_type#Nachi: added 1
             )
             self.rnd_lst = glob(rnd_img_ptn)
             print("render data length: ", len(self.rnd_lst))
@@ -63,7 +63,7 @@ class Dataset():
                 print(colored(warning, "red", attrs=['bold']))
 
             fuse_img_ptn = os.path.join(
-                self.root, 'fuse/%s/*.pkl' % cls_type#Nachi: added 1
+                self.root, 'fuse/%s/*99.pkl' % cls_type#Nachi: added 1
             )
             self.fuse_lst = glob(fuse_img_ptn)
             print("fused data length: ", len(self.fuse_lst))

@@ -1,0 +1,23 @@
+Metadata-Version: 2.1
+Name: vit-pytorch
+Version: 0.35.7
+Summary: Vision Transformer (ViT) - Pytorch
+Home-page: https://github.com/lucidrains/vit-pytorch
+Author: Phil Wang
+Author-email: lucidrains@gmail.com
+License: MIT
+Keywords: artificial intelligence,attention mechanism,image recognition
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: einops (>=0.4.1)
+Requires-Dist: torch (>=1.10)
+Requires-Dist: torchvision
+
+UNKNOWN
+

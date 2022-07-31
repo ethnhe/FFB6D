@@ -27,6 +27,23 @@ class ConfigRandLA:
     num_sub_points = [num_points // 4, num_points // 16, num_points // 64, num_points // 256]
 
 
+class ConfigTrans:
+    #image_size = 64 #verified
+    patch_size = 1
+    num_classes = 22
+    dim = 12800
+    depth = 2
+    heads = 2
+    mlp_dim = 12800
+    pool = 'cls'
+    channels = 3
+    dim_head = 4
+    dropout = 0.
+    emb_dropout = 0.
+
+    d_out = [32]
+
+
 class Config:
     def __init__(self, ds_name='ycb', cls_type=''):
         self.dataset_name = ds_name

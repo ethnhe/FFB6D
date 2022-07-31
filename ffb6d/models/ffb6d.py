@@ -131,7 +131,9 @@ class FFB6D(nn.Module):
         # ####################### prediction headers #############################
         # We use 3D keypoint prediction header for pose estimation following PVN3D
         # You can use different prediction headers for different downstream tasks.
-
+        print('Size before prediction headers')
+        print(self.up_rndla_oc[-1])
+        print(self.up_rgb_oc[-1])
         self.rgbd_seg_layer = (
             pt_utils.Seq(self.up_rndla_oc[-1] + self.up_rgb_oc[-1])
             .conv1d(128, bn=True, activation=nn.ReLU())
