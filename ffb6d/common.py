@@ -30,14 +30,14 @@ class ConfigRandLA:
 class ConfigTrans:
     #image_size = 64 #verified
     patch_size = 1
-    num_classes = 22
-    dim = 12800
+    num_classes = 2 #object + background
+    dim = 128
     depth = 2
     heads = 2
-    mlp_dim = 12800
+    mlp_dim = 256
     pool = 'cls'
     channels = 3
-    dim_head = 4
+    dim_head = 2
     dropout = 0.
     emb_dropout = 0.
 
@@ -71,8 +71,8 @@ class Config:
         ensure_fd(self.log_traininfo_dir)
 
         self.n_total_epoch = 25
-        self.mini_batch_size = 3
-        self.val_mini_batch_size = 3
+        self.mini_batch_size = 1  #was 3
+        self.val_mini_batch_size = 1   #was 3
         self.test_mini_batch_size = 1
 
         self.n_sample_points = 480 * 640 // 24  # Number of input points

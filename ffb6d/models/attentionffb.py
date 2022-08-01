@@ -157,11 +157,7 @@ class AttFFB6D(nn.Module):
         patch_dim = 12800
         num_patches = 12800
         #maybe convolute to reduce size
-        self.size_reduction = (
-           pt_utils.Seq(self.up_rndla_oc[-1] + self.up_rgb_oc[-1])
-           .conv1d(64, kernel_size=3, stride=3, bn=True, activation=nn.ReLU())
-           #.conv1d(128, bn=True, activation=nn.ReLU())
-           )
+        #self.size_reduction = (pt_utils.Seq(self.up_rndla_oc[-1] + self.up_rgb_oc[-1]).conv1d(64, kernel_size=3, stride=3, bn=True, activation=nn.ReLU()))
 
 
         assert trans_cfg.pool in {'cls', 'mean'}, 'pool type must be either cls (cls token) or mean (mean pooling)'
@@ -397,23 +393,24 @@ class AttFFB6D(nn.Module):
         print(p_emb.size())
         print(rgbd_emb.size())
 
-        x = self.size_reduction(rgbd_emb)
-        print('NACHI: reduced size')
-        print(x.size())
-        x = self.to_patch_embedding(x)
+        #x = self.size_reduction(rgbd_emb)
+        #print('NACHI: reduced size')
+        #print(x.size())
+        x = self.to_patch_embedding(rgbd_emb)
         b, n, _ = x.shape
 
         cls_tokens = repeat(self.cls_token, '1 1 d -> b 1 d', b=b)
         x = torch.cat((cls_tokens, x), dim=1)
         x += self.pos_embedding[:, :(n + 1)]
         x = self.dropout(x)
-
         x = self.transformer(x)
-
         x = x.mean(dim=1) if self.pool == 'mean' else x[:, 0]
-
         x = self.to_latent(x)
         lastx = self.mlp_head(x)
+
+        print('NACHI: Final MLP output')
+        print(lastx.size())
+        print(lastx)
         #return lastx
 
         # ###################### prediction stages #############################
@@ -434,6 +431,9 @@ class AttFFB6D(nn.Module):
         #end_points['pred_ctr_ofs'] = pred_ctr_ofs
 
         end_points['pred_rgbd_segs'] = lastx
+        end_points['pred_kp_ofs'] = lastx
+        end_points['pred_ctr_ofs'] = lastx
+
         return end_points
 
 
