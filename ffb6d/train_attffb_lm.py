@@ -30,7 +30,8 @@ from common import Config, ConfigRandLA, ConfigTrans
 import models.pytorch_utils as pt_utils
 #from models.ffb6d import FFB6D
 from models.attentionffb import AttFFB6D as FFB6D
-from models.loss import OFLoss, FocalLoss
+from models.att_loss import OFLoss, FocalLoss
+#from models.loss import OFLoss, FocalLoss
 from utils.pvn3d_eval_utils_kpls import TorchEval
 from utils.basic_utils import Basic_Utils
 import datasets.linemod.linemod_dataset as dataset_desc
@@ -242,7 +243,8 @@ def model_fn_decorator(
                     cu_dt[key] = data[key].float().cuda()
                 elif data[key].dtype in [torch.int32, torch.int16]:
                     cu_dt[key] = data[key].long().cuda()
-            print('Nachi says:', cu_dt.keys())
+            #print('Nachi says:', cu_dt.keys())
+            #print(cu_dt['choose'].size())
             end_points = model(cu_dt)
 
             labels = cu_dt['labels']

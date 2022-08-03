@@ -28,6 +28,10 @@ class FocalLoss(_Loss):
         # print("fcls reshape input.size", input.size(), target.size())
 
         logpt = F.log_softmax(input)
+
+        print('NACHI: FocalLoss Target')
+        print(target.size())    #12800,1
+
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)
         pt = Variable(logpt.data.exp())

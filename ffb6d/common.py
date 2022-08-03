@@ -36,7 +36,7 @@ class ConfigTrans:
     heads = 2
     mlp_dim = 256
     pool = 'cls'
-    channels = 3
+    channels = 1
     dim_head = 2
     dropout = 0.
     emb_dropout = 0.

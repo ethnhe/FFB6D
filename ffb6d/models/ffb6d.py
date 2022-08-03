@@ -225,8 +225,18 @@ class FFB6D(nn.Module):
         # rndla pre
         xyz, p_emb = self._break_up_pc(inputs['cld_rgb_nrm'])
         p_emb = inputs['cld_rgb_nrm']
+
+        #print('NACHI: initial input size')
+        #print(inputs['rgb'].size())            #1,3,480,640
+        #print(inputs['cld_rgb_nrm'].size())    #1,9,12800
+
+
         p_emb = self.rndla_pre_stages(p_emb)
         p_emb = p_emb.unsqueeze(dim=3)  # Batch*channel*npoints*1
+
+        #print('NACHI: end of prep')
+        #print(rgb_emb.size())  #1,64,120,160
+        #print(p_emb.size())    #1,8,12800,1
 
         # ###################### encoding stages #############################
         ds_emb = []
@@ -264,6 +274,10 @@ class FFB6D(nn.Module):
             )
             ds_emb.append(p_emb)
 
+        #print('NACHI: End of Encoding')
+        #print(rgb_emb.size())  #1,1024,60,80
+        #print(p_emb.size())    #1,512,50,1
+
         # ###################### decoding stages #############################
         n_up_layers = len(self.rndla_up_stages)
         for i_up in range(n_up_layers-1):
@@ -299,8 +313,16 @@ class FFB6D(nn.Module):
                 torch.cat((p_emb0, r2p_emb), dim=1)
             )
 
+        #print('NACHI: end of decoding')
+        #print(rgb_emb.size())  # 1, 64, 240, 320   #1,64,240,320
+        #print(p_emb.size())                        #1,64,3200,1
+
         # final upsample layers:
         rgb_emb = self.cnn_up_stages[n_up_layers-1](rgb_emb)
+
+        #print('NACHI: final RGB upsample')
+        #print(rgb_emb.size())  #1,64,480,640
+
         f_interp_i = self.nearest_interpolation(
             p_emb, inputs['cld_interp_idx%d' % (0)]
         )
@@ -311,6 +333,10 @@ class FFB6D(nn.Module):
         bs, di, _, _ = rgb_emb.size()
         rgb_emb_c = rgb_emb.view(bs, di, -1)
         choose_emb = inputs['choose'].repeat(1, di, 1)
+
+        #print('Nachi: Choose embedding')
+        #print(choose_emb.size())   #1,64,12800
+
         rgb_emb_c = torch.gather(rgb_emb_c, 2, choose_emb).contiguous()
 
         # Use DenseFusion in final layer, which will hurt performance due to overfitting
@@ -319,10 +345,20 @@ class FFB6D(nn.Module):
         # Use simple concatenation. Good enough for fully fused RGBD feature.
         rgbd_emb = torch.cat([rgb_emb_c, p_emb], dim=1)
 
+        print('NACHI: output dims of ffb')
+        print(rgb_emb_c.size())  # 1,64,12800
+        print(p_emb.size())  # 1,64,12800
+        print(rgbd_emb.size())  # 1,128,12800
+
         # ###################### prediction stages #############################
         rgbd_segs = self.rgbd_seg_layer(rgbd_emb)
         pred_kp_ofs = self.kp_ofst_layer(rgbd_emb)
         pred_ctr_ofs = self.ctr_ofst_layer(rgbd_emb)
+
+        print('NACHI: post prediction stages')
+        print(rgbd_segs.size())  # 1,2,12800
+        print(pred_kp_ofs.size())  # 1,24,12800
+        print(pred_ctr_ofs.size())  # 1,3,12800
 
         pred_kp_ofs = pred_kp_ofs.view(
             bs, self.n_kps, 3, -1
