@@ -11,3 +11,4 @@ ffb6d/datasets/ycb/YCB_Video_Dataset
 ffb6d/datasets/linemod/Linemod_preprocessed
 apex/
 normalSpeed/
+/ffb6d/train_log/

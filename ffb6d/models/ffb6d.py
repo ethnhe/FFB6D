@@ -131,9 +131,9 @@ class FFB6D(nn.Module):
         # ####################### prediction headers #############################
         # We use 3D keypoint prediction header for pose estimation following PVN3D
         # You can use different prediction headers for different downstream tasks.
-        print('Size before prediction headers')
-        print(self.up_rndla_oc[-1])
-        print(self.up_rgb_oc[-1])
+        #print('Size before prediction headers')
+        #print(self.up_rndla_oc[-1])
+        #print(self.up_rgb_oc[-1])
         self.rgbd_seg_layer = (
             pt_utils.Seq(self.up_rndla_oc[-1] + self.up_rgb_oc[-1])
             .conv1d(128, bn=True, activation=nn.ReLU())
@@ -345,20 +345,20 @@ class FFB6D(nn.Module):
         # Use simple concatenation. Good enough for fully fused RGBD feature.
         rgbd_emb = torch.cat([rgb_emb_c, p_emb], dim=1)
 
-        print('NACHI: output dims of ffb')
-        print(rgb_emb_c.size())  # 1,64,12800
-        print(p_emb.size())  # 1,64,12800
-        print(rgbd_emb.size())  # 1,128,12800
+        #print('NACHI: output dims of ffb')
+        #print(rgb_emb_c.size())  # 1,64,12800
+        #print(p_emb.size())  # 1,64,12800
+        #print(rgbd_emb.size())  # 1,128,12800
 
         # ###################### prediction stages #############################
         rgbd_segs = self.rgbd_seg_layer(rgbd_emb)
         pred_kp_ofs = self.kp_ofst_layer(rgbd_emb)
         pred_ctr_ofs = self.ctr_ofst_layer(rgbd_emb)
 
-        print('NACHI: post prediction stages')
-        print(rgbd_segs.size())  # 1,2,12800
-        print(pred_kp_ofs.size())  # 1,24,12800
-        print(pred_ctr_ofs.size())  # 1,3,12800
+        #print('NACHI: post prediction stages')
+        #print(rgbd_segs.size())  # 1,2,12800
+        #print(pred_kp_ofs.size())  # 1,24,12800
+        #print(pred_ctr_ofs.size())  # 1,3,12800
 
         pred_kp_ofs = pred_kp_ofs.view(
             bs, self.n_kps, 3, -1

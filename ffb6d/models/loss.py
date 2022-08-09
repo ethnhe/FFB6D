@@ -29,8 +29,8 @@ class FocalLoss(_Loss):
 
         logpt = F.log_softmax(input)
 
-        print('NACHI: FocalLoss Target')
-        print(target.size())    #12800,1
+        #print('NACHI: FocalLoss Target')
+        #print(target.size())    #12800,1
 
         logpt = logpt.gather(1,target)
         logpt = logpt.view(-1)

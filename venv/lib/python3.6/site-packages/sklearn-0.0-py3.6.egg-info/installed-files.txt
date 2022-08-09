@@ -1,6 +1,0 @@
-PKG-INFO
-SOURCES.txt
-dependency_links.txt
-not-zip-safe
-requires.txt
-top_level.txt

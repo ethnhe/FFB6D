@@ -115,6 +115,16 @@ config = Config(ds_name='linemod', cls_type=args.cls)
 bs_utils = Basic_Utils(config)
 writer = SummaryWriter(log_dir=config.log_traininfo_dir)
 
+import pandas as pd
+val_metrics_df = pd.DataFrame()
+loss_rgbd_seg_col = []
+loss_kp_of_col = []
+loss_ctr_of_col = []
+loss_all_col = []
+loss_target_col = []
+acc_rgbd_col = []
+val_acc_col = []
+
 rlimit = resource.getrlimit(resource.RLIMIT_NOFILE)
 resource.setrlimit(resource.RLIMIT_NOFILE, (30000, rlimit[1]))
 
@@ -278,6 +288,7 @@ def model_fn_decorator(
                 imshow('gt_lb', show_gt_lb)
                 waitKey(0)
 
+
             loss_dict = {
                 'loss_rgbd_seg': loss_rgbd_seg.item(),
                 'loss_kp_of': loss_kp_of.item(),
@@ -295,6 +306,18 @@ def model_fn_decorator(
                 if args.local_rank == 0:
                     writer.add_scalars('loss', loss_dict, it)
                     writer.add_scalars('train_acc', acc_dict, it)
+                    #Nachi: making metric df
+                    acc_rgbd_col.append(acc_dict['acc_rgbd'])
+                    loss_rgbd_seg_col.append(loss_dict['loss_rgbd_seg'])
+                    loss_kp_of_col.append(loss_dict['loss_kp_of'])
+                    loss_ctr_of_col.append(loss_dict['loss_ctr_of'])
+                    loss_all_col.append(loss_dict['loss_all'])
+                    loss_target_col.append(loss_dict['loss_target'])
+
+                    #print('NACHI: Add Scalars sizes:')
+                    #print(loss_dict.keys(), loss_dict[list(loss_dict.keys())[0]])   #dict_keys(['loss_rgbd_seg', 'loss_kp_of', 'loss_ctr_of', 'loss_all', 'loss_target'])    #0.05776539817452431
+                    #print(acc_dict.keys(), acc_dict[list(acc_dict.keys())[0]])      #dict_keys(['acc_rgbd'])                                                                #0.9297655820846558
+
             if is_test and test_pose:
                 cld = cu_dt['cld_rgb_nrm'][:, :3, :].permute(0, 2, 1).contiguous()
 
@@ -415,14 +438,31 @@ class Trainer(object):
                 )
             seg_res_fn = 'seg_res'
             for k, v in acc_dict.items():
-                seg_res_fn += '_%s%.2f' % (k, v)
+                print(k,len(v), max(v), min(v), np.array(v).mean() * 100)
+                seg_res_fn += '_%s%.2f' % (k, np.array(v).mean() * 100)
             with open(os.path.join(config.log_eval_dir, seg_res_fn), 'w') as of:
                 for k, v in acc_dict.items():
                     print(k, v, file=of)
         if args.local_rank == 0:
-            #Nachi: removed next line
-            #writer.add_scalars('val_acc', acc_dict, it)
-            pass
+            #Nachi: removed next line, find a way to split the items inside and then save them
+            #print('NACHI:FINAL DIMS SCALAR')
+            #print(acc_dict.keys(), len(acc_dict[list(acc_dict.keys())[0]]), acc_dict[list(acc_dict.keys())[0]])
+            for sc in acc_dict['acc_rgbd']:
+                val_acc_col.append(sc)
+            #print('Nachi: Ouput lists size loss/acc: loss_rgbd_seg, loss_kp_of, loss_ctr_of, loss_all, loss_target, acc_rgbd, val_acc_rgbd: ')
+            #print(len(loss_rgbd_seg_col), loss_rgbd_seg_col[0])
+            #print(len(loss_kp_of_col), loss_kp_of_col[0])
+            #print(len(loss_ctr_of_col), loss_ctr_of_col[0])
+            #print(len(loss_all_col), loss_all_col[0])
+            #print(len(loss_target_col), loss_target_col[0])
+            #print(len(acc_rgbd_col), acc_rgbd_col[0])
+            #print(len(val_acc_col), val_acc_col[0])
+
+            for this_in, val in enumerate(acc_dict['acc_rgbd']):
+                writer.add_scalar(tag='val_acc', scalar_value=val, global_step=this_in)
+
+            acc_dict['acc_rgbd'] = sum(acc_dict['acc_rgbd'][-1041:]) / 1041
+            writer.add_scalars('val_acc_avg', acc_dict, it)
 
         return total_loss / count, eval_dict
 
