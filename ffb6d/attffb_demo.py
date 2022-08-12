@@ -99,10 +99,9 @@ def cal_view_pred_pose(model, data, epoch=0, obj_id=-1):
             elif data[key].dtype in [torch.int32, torch.int16]:
                 cu_dt[key] = data[key].long().cuda()
         end_points = model(cu_dt)
-        print(end_points.items()[1])
         end_points_df = pd.DataFrame(end_points.items())
         #print(end_points_df.columns)
-        end_points_df.to_csv('/home/nachiket/Documents/GitHub/FFB6D/ffb6d/train_log/linemod/train_info/driller/endpoints_df.csv')
+        #end_points_df.to_csv('~/Documents/GitHub/FFB6D/ffb6d/train_log/linemod/train_info/driller/endpoints_df_attffb.csv')
         _, classes_rgbd = torch.max(end_points['pred_rgbd_segs'], 1)
 
         pcld = cu_dt['cld_rgb_nrm'][:, :3, :].permute(0, 2, 1).contiguous()
