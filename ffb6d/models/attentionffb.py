@@ -448,7 +448,10 @@ class AttFFB6D(nn.Module):
         cls_tokens = repeat(self.cls_token, '1 1 d -> b 1 d', b=b)
         #print(cls_tokens.size())    #1,1,128
         x = torch.cat((cls_tokens, x), dim=1)
+        #print('Nachi: post cls cat')
+        #print(x.size())         #1,12801,128
         x += self.pos_embedding[:, :(n + 1)]
+        #print(x.size())         #1,12801,128
         x = self.dropout(x)
         #print('NACHI: Pre Transformer')
         #print(x.size())     #1,12801,128
@@ -459,10 +462,10 @@ class AttFFB6D(nn.Module):
         #todo: new day
         x = self.revert_from_transformer(x)
         #print(x.size())     #1,128,12801
-        x_data = x[:,:,:-1]
+        x_data = x[:,:,1:]
         #print(x_data.size())            #1,128, 12800
-        x_pos_embedding = x[:,:,-1].unsqueeze(-1)
-        #print(x_pos_embedding.size())   #1,128,1
+        x_cls_token = x[:,:,0].unsqueeze(-1)
+        #print(x_cls_token.size())   #1,128,1
         #rearrange transformer output back to 1,128,12800,1 and so on
 
         #x = x.mean(dim=1) if self.pool == 'mean' else x[:, 0]

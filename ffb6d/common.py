@@ -70,7 +70,7 @@ class Config:
         self.log_traininfo_dir = os.path.join(self.log_dir, 'train_info', self.cls_type)
         ensure_fd(self.log_traininfo_dir)
 
-        self.n_total_epoch = 2 #Nachi was 25
+        self.n_total_epoch = 15 #Nachi was 25
         self.mini_batch_size = 1  #Nachi was 3
         self.val_mini_batch_size = 1   #Nachi was 3
         self.test_mini_batch_size = 1
