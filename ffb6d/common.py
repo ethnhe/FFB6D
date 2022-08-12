@@ -16,8 +16,8 @@ class ConfigRandLA:
     num_classes = 22  # Number of valid classes
     sub_grid_size = 0.06  # preprocess_parameter
 
-    batch_size = 1  # Nachi batch_size during training
-    val_batch_size = 1  # Nachi batch_size during validation and test
+    batch_size = 3  # Nachi batch_size during training
+    val_batch_size = 3  # Nachi batch_size during validation and test
     train_steps = 500  # Number of steps per epochs
     val_steps = 100  # Number of validation steps per epoch
     in_c = 9
@@ -70,9 +70,9 @@ class Config:
         self.log_traininfo_dir = os.path.join(self.log_dir, 'train_info', self.cls_type)
         ensure_fd(self.log_traininfo_dir)
 
-        self.n_total_epoch = 15 #Nachi was 25
-        self.mini_batch_size = 1  #Nachi was 3
-        self.val_mini_batch_size = 1   #Nachi was 3
+        self.n_total_epoch = 25 #Nachi was 25
+        self.mini_batch_size = 3  #Nachi was 3
+        self.val_mini_batch_size = 3   #Nachi was 3
         self.test_mini_batch_size = 1
 
         self.n_sample_points = 480 * 640 // 24  # Number of input points
