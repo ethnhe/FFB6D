@@ -213,12 +213,14 @@ class Dataset():
                 labels = (labels == self.cls_id).astype("uint8")
             else:
                 labels = (labels > 0).astype("uint8")
+                # todo: Nachi: make labels from 1 to cls_id+1
         else:
             with Image.open(os.path.join(self.cls_root, "depth/{}.png".format(item_name))) as di:
                 dpt_mm = np.array(di)
             with Image.open(os.path.join(self.cls_root, "mask/{}.png".format(item_name))) as li:
                 labels = np.array(li)
                 labels = (labels > 0).astype("uint8")
+                #todo: Nachi: make labels from 1 to cls_id+1
             with Image.open(os.path.join(self.cls_root, "rgb/{}.png".format(item_name))) as ri:
                 if self.add_noise:
                     ri = self.trancolor(ri)

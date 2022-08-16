@@ -573,6 +573,7 @@ def train():
     torch.manual_seed(0)
 
     if not args.eval_net:
+        #todo: Nachi: if args.cls=='all': loop through all labels, then append/concatenate.
         train_ds = dataset_desc.Dataset('train', cls_type=args.cls)
         train_sampler = torch.utils.data.distributed.DistributedSampler(train_ds)
         train_loader = torch.utils.data.DataLoader(
