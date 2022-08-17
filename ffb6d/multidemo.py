@@ -221,7 +221,7 @@ def main():
         enumerate(test_loader), leave=False, desc="val"
     ):
         pcount+=1
-        if pcount>2:
+        if pcount>5:
             break
 
         predicted_points_list = []

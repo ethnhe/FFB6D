@@ -112,8 +112,8 @@ class Config:
             self.ycb_cls_lst = self.read_lines(self.ycb_cls_lst_p)
             self.ycb_sym_cls_ids = [13, 16, 19, 20, 21]
         else:  # linemod
-            #self.n_objects = 13 #Nachi
-            self.n_objects = 1 + 1  # 1 object + background
+            self.n_objects = 13 + 1 #Nachi
+            #self.n_objects = 1 + 1  # 1 object + background
             self.n_classes = self.n_objects
             self.lm_cls_lst = [
                 1, 2, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15

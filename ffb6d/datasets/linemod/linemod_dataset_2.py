@@ -23,7 +23,6 @@ except ImportError:
 
 
 class Dataset():
-
     def __init__(self, dataset_name, cls_type="duck", DEBUG=False):
         self.DEBUG = DEBUG
         self.config = Config(ds_name='linemod', cls_type=cls_type)
@@ -212,17 +211,45 @@ class Dataset():
             RT = data['RT']
             rnd_typ = data['rnd_typ']
             if rnd_typ == "fuse":
+                #print('Nachi: FUSE data load image label: ')
+                #print(labels.shape)
+                #print(np.count_nonzero(labels))
+                #rows, cols = np.nonzero(labels)
+                #print(labels[rows, cols])
                 labels = (labels == self.cls_id).astype("uint8")
+                #print(labels.shape)
+                #print(np.count_nonzero(labels))
+                #rows, cols = np.nonzero(labels)
+                #print(labels[rows, cols])
+                #print(self.cls_id)
             else:
+                #print('Nachi: ELSE data load image label: ')
+                #print(labels.shape)
+                #print(np.count_nonzero(labels))
+                #rows, cols = np.nonzero(labels)
+                #print(labels[rows, cols])
                 labels = (labels > 0).astype("uint8")
-                print(labels)
+                #print(labels.shape)
+                #print(np.count_nonzero(labels))
+                #rows, cols = np.nonzero(labels)
+                #print(labels[rows, cols])
+                #print(self.cls_id)
                 # todo: Nachi: make labels from 1 to cls_id+1
         else:
             with Image.open(os.path.join(self.cls_root, "depth/{}.png".format(item_name))) as di:
                 dpt_mm = np.array(di)
             with Image.open(os.path.join(self.cls_root, "mask/{}.png".format(item_name))) as li:
                 labels = np.array(li)
+                #print('Nachi: NONPKL data load image label: ')
+                #print(labels.shape)
+                #print(np.count_nonzero(labels))
+                #rows, cols = np.nonzero(labels)
+                #print(labels[rows, cols])
                 labels = (labels > 0).astype("uint8")
+                #print(labels.shape)
+                #print(np.count_nonzero(labels))
+                #rows, cols = np.nonzero(labels)
+                #print(labels[rows, cols])
                 #todo: Nachi: make labels from 1 to cls_id+1
             with Image.open(os.path.join(self.cls_root, "rgb/{}.png".format(item_name))) as ri:
                 if self.add_noise:
@@ -292,6 +319,15 @@ class Dataset():
         rgb_pt = rgb.reshape(-1, 3)[choose, :].astype(np.float32)
         nrm_pt = nrm_map[:, :, :3].reshape(-1, 3)[choose, :]
         labels_pt = labels.flatten()[choose]
+        #todo: Nachi added
+        #print('NACHI LABELS_PT:')
+        #print(labels_pt.shape)
+        #print(np.count_nonzero(labels_pt))
+        pts = np.nonzero(labels_pt)
+        #print(labels_pt[pts])
+        np.put(labels_pt, pts, self.cls_id, mode='raise')
+        #print('NACHI: post replacement')
+        #print(labels_pt[pts])
         choose = np.array([choose])
         cld_rgb_nrm = np.concatenate((cld, rgb_pt, nrm_pt), axis=1).transpose(1, 0)
 
@@ -474,6 +510,8 @@ def main():
         # for cat in ['test']:
         for cat in ['train']:
             datum = ds[cat].__getitem__(idx[cat])
+            print('NACHI:')
+            print(datum.keys())
             idx[cat] += 1
             K = datum['K']
             cam_scale = datum['cam_scale']
