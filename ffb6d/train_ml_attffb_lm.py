@@ -618,28 +618,29 @@ def train():
 
     if not args.eval_net:
         if args.cls=='all':
-            train_ds_list = {}
-            train_sampler_list = {}
-            train_loader_list = {}
-            val_ds_list = {}
-            val_sampler_list = {}
-            val_loader_list = {}
-            for k in config.lm_obj_dict.keys():
-                train_ds_list[k] = dataset_desc.Dataset('train', cls_type=k)
-                val_ds_list[k] = dataset_desc.Dataset('test', cls_type=k)
-                #train_ds = merge_datasets(train_ds, train_ds_k)
-                #val_ds = merge_datasets(val_ds, val_ds_k)
-                train_sampler_list[k] = torch.utils.data.distributed.DistributedSampler(train_ds_list[k])
-                train_loader_list[k] = torch.utils.data.DataLoader(
-                    train_ds_list[k], batch_size=config.mini_batch_size, shuffle=False,
-                    drop_last=True, num_workers=4, sampler=train_sampler_list[k], pin_memory=True
-                )
-
-                val_sampler_list[k] = torch.utils.data.distributed.DistributedSampler(val_ds_list[k])
-                val_loader_list[k] = torch.utils.data.DataLoader(
-                    val_ds_list[k], batch_size=config.val_mini_batch_size, shuffle=False,
-                    drop_last=False, num_workers=4, sampler=val_sampler_list[k]
-                )
+            pass
+            #train_ds_list = {}
+            #train_sampler_list = {}
+            #train_loader_list = {}
+            #val_ds_list = {}
+            #val_sampler_list = {}
+            #val_loader_list = {}
+            #for k in config.lm_obj_dict.keys():
+            #    train_ds_list[k] = dataset_desc.Dataset('train', cls_type=k)
+            #    val_ds_list[k] = dataset_desc.Dataset('test', cls_type=k)
+            #    #train_ds = merge_datasets(train_ds, train_ds_k)
+            #    #val_ds = merge_datasets(val_ds, val_ds_k)
+            #    train_sampler_list[k] = torch.utils.data.distributed.DistributedSampler(train_ds_list[k])
+            #    train_loader_list[k] = torch.utils.data.DataLoader(
+            #        train_ds_list[k], batch_size=config.mini_batch_size, shuffle=False,
+            #        drop_last=True, num_workers=4, sampler=train_sampler_list[k], pin_memory=True
+            #    )
+            #
+            #    val_sampler_list[k] = torch.utils.data.distributed.DistributedSampler(val_ds_list[k])
+            #    val_loader_list[k] = torch.utils.data.DataLoader(
+            #        val_ds_list[k], batch_size=config.val_mini_batch_size, shuffle=False,
+            #        drop_last=False, num_workers=4, sampler=val_sampler_list[k]
+            #    )
 
         else:
             train_ds = dataset_desc.Dataset('train', cls_type=args.cls)
@@ -662,14 +663,15 @@ def train():
             )
     else:
         if args.cls=='all':
-            test_ds_list = {}
-            test_loader_list = {}
-            for k in config.lm_obj_dict.keys():
-                test_ds_list[k] = dataset_desc.Dataset('test', cls_type=k)
-                test_loader_list[k] = torch.utils.data.DataLoader(
-                    test_ds_list[k], batch_size=config.test_mini_batch_size, shuffle=False,
-                    num_workers=10
-                )
+            pass
+            #test_ds_list = {}
+            #test_loader_list = {}
+            #for k in config.lm_obj_dict.keys():
+            #    test_ds_list[k] = dataset_desc.Dataset('test', cls_type=k)
+            #    test_loader_list[k] = torch.utils.data.DataLoader(
+            #        test_ds_list[k], batch_size=config.test_mini_batch_size, shuffle=False,
+            #        num_workers=10
+            #    )
         else:
             test_ds = dataset_desc.Dataset('test', cls_type=args.cls)
 
@@ -723,16 +725,17 @@ def train():
         )
         clr_div = 2
         #todo: make lr_scheduler_list?
-        if args.cls == 'all':
-            lr_scheduler_list = {}
-            for k in config.lm_obj_dict.keys():
-                lr_scheduler_list[k] = CyclicLR(
-                    optimizer, base_lr=1e-5, max_lr=1e-3,
-                    cycle_momentum=False,
-                    step_size_up=config.n_total_epoch * train_ds_list[k].minibatch_per_epoch // clr_div // args.gpus,
-                    step_size_down=config.n_total_epoch * train_ds_list[k].minibatch_per_epoch // clr_div // args.gpus,
-                    mode='triangular'
-                )
+        if args.cls=='all':
+            pass
+            #lr_scheduler_list = {}
+            #for k in config.lm_obj_dict.keys():
+            #    lr_scheduler_list[k] = CyclicLR(
+            #        optimizer, base_lr=1e-5, max_lr=1e-3,
+            #        cycle_momentum=False,
+            #        step_size_up=config.n_total_epoch * train_ds_list[k].minibatch_per_epoch // clr_div // args.gpus,
+            #        step_size_down=config.n_total_epoch * train_ds_list[k].minibatch_per_epoch // clr_div // args.gpus,
+            #        mode='triangular'
+            #    )
         else:
             lr_scheduler = CyclicLR(
                 optimizer, base_lr=1e-5, max_lr=1e-3,
@@ -769,17 +772,18 @@ def train():
     checkpoint_fd = config.log_model_dir
 
     if args.cls == 'all':
-        trainer_list= {}
-        for k in config.lm_obj_dict.keys():
-            trainer_list[k] = Trainer(
-                model,
-                model_fn,
-                optimizer,
-                checkpoint_name=os.path.join(checkpoint_fd, "AttmlFFB6D_%s" % args.cls),
-                best_name=os.path.join(checkpoint_fd, "AttmlFFB6D_%s_best" % args.cls),
-                lr_scheduler=lr_scheduler_list[k],
-                bnm_scheduler=bnm_scheduler,
-            )
+        pass
+        #trainer_list= {}
+        #for k in config.lm_obj_dict.keys():
+        #    trainer_list[k] = Trainer(
+        #        model,
+        #        model_fn,
+        #        optimizer,
+        #        checkpoint_name=os.path.join(checkpoint_fd, "AttmlFFB6D_%s" % args.cls),
+        #        best_name=os.path.join(checkpoint_fd, "AttmlFFB6D_%s_best" % args.cls),
+        #        lr_scheduler=lr_scheduler_list[k],
+        #        bnm_scheduler=bnm_scheduler,
+        #    )
     else:
         trainer = Trainer(
             model,
@@ -793,15 +797,16 @@ def train():
 
     if args.eval_net:
         if args.cls=='all':
-            val_loss_list = {}
-            res_list = {}
-            for k in config.lm_obj_dict.keys():
-                start = time.time()
-                val_loss_list[k], res_list[k] = trainer_list[k].eval_epoch(
-                    test_loader_list[k], is_test=True, test_pose=args.test_pose
-                )
-                end = time.time()
-                print("\nUse time: ", end - start, 's')
+            pass
+            #val_loss_list = {}
+            #res_list = {}
+            #for k in config.lm_obj_dict.keys():
+            #    start = time.time()
+            #    val_loss_list[k], res_list[k] = trainer_list[k].eval_epoch(
+            #        test_loader_list[k], is_test=True, test_pose=args.test_pose
+            #    )
+            #    end = time.time()
+            #    print("\nUse time: ", end - start, 's')
         else:
             start = time.time()
             val_loss, res = trainer.eval_epoch(
@@ -810,17 +815,18 @@ def train():
             end = time.time()
             print("\nUse time: ", end - start, 's')
     else:
-        if args.cls == 'all':
-            for k in config.lm_obj_dict.keys():
-                trainer_list[k].train(
-                it, start_epoch, config.n_total_epoch, train_loader_list[k], None,
-                val_loader_list[k], best_loss=best_loss,
-                tot_iter=config.n_total_epoch * train_ds_list[k].minibatch_per_epoch // args.gpus,
-                clr_div=clr_div
-                )
-
-                if start_epoch == config.n_total_epoch:
-                    _ = trainer_list[k].eval_epoch(val_loader_list[k])
+        if args.cls=='all':
+            pass
+            #for k in config.lm_obj_dict.keys():
+            #    trainer_list[k].train(
+            #    it, start_epoch, config.n_total_epoch, train_loader_list[k], None,
+            #    val_loader_list[k], best_loss=best_loss,
+            #    tot_iter=config.n_total_epoch * train_ds_list[k].minibatch_per_epoch // args.gpus,
+            #    clr_div=clr_div
+            #    )
+            #
+            #    if start_epoch == config.n_total_epoch:
+            #        _ = trainer_list[k].eval_epoch(val_loader_list[k])
 
         else:
             trainer.train(

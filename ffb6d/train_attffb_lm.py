@@ -29,7 +29,8 @@ from tensorboardX import SummaryWriter
 from common import Config, ConfigRandLA, ConfigTrans
 import models.pytorch_utils as pt_utils
 #from models.ffb6d import FFB6D
-from models.attentionffb import AttFFB6D as FFB6D
+#from models.attentionffb import AttFFB6D as FFB6D
+from models.attffb_fuse import AttFFB6D as FFB6D
 from models.att_loss import OFLoss, FocalLoss
 #from models.loss import OFLoss, FocalLoss
 from utils.pvn3d_eval_utils_kpls import TorchEval

@@ -215,7 +215,7 @@ class Dataset():
                 labels = (labels == self.cls_id).astype("uint8")
             else:
                 labels = (labels > 0).astype("uint8")
-                print(labels)
+                #print(labels)
                 # todo: Nachi: make labels from 1 to cls_id+1
         else:
             with Image.open(os.path.join(self.cls_root, "depth/{}.png".format(item_name))) as di:

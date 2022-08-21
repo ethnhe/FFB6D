@@ -15,9 +15,9 @@ import torch.nn as nn
 import numpy as np
 import pickle as pkl
 from common import Config, ConfigRandLA, ConfigTrans
-from models.super_original_ffb6d import FFB6D
+#from models.super_original_ffb6d import FFB6D
 #from models.ffb6d import FFB6D
-#from models.attentionffb import AttFFB6D as FFB6D
+from models.attentionffb import AttFFB6D as FFB6D
 from datasets.ycb.ycb_dataset import Dataset as YCB_Dataset
 from datasets.linemod.linemod_dataset import Dataset as LM_Dataset
 from utils.pvn3d_eval_utils_kpls import cal_frame_poses, cal_frame_poses_lm
@@ -162,6 +162,7 @@ def cal_view_pred_pose(model, data, epoch=0, obj_id=-1):
         temp_img = bgr - ori_bgr
 
         #Nachi: check if temp is sprayed, meaning no object ctr
+        #todo: make this check better
         temp_intensity_mat = temp_img.sum(axis=2)
         temp_non_zeros = np.nonzero(temp_intensity_mat)  #tuples, first shouldnt start with zeroes.
         #print(temp_non_zeros)
@@ -190,6 +191,7 @@ def main():
     else:
         test_ds = LM_Dataset('test', cls_type=args.cls)
         obj_id = config.lm_obj_dict[args.cls]
+
     test_loader = torch.utils.data.DataLoader(
         test_ds, batch_size=config.test_mini_batch_size, shuffle=False,
         num_workers=20
@@ -198,13 +200,14 @@ def main():
     rndla_cfg = ConfigRandLA
     trans_cfg = ConfigTrans
 
-    base_best_path = '/home/nachiket/Documents/saved_models/FFB_basic_best/LineMOD/FFB6D_'
-    #base_best_path = '/home/nachiket/Documents/train_log_backup/peregrine_models/AttFFB6D_'
+    #base_best_path = '/home/nachiket/Documents/saved_models/FFB_basic_best/LineMOD/FFB6D_'
+    base_pere_attffb_best_path = '/home/nachiket/Documents/train_log_backup/peregrine_models_AttFFB6D/AttFFB6D_'
+    base_best_path = base_pere_attffb_best_path
     models = {}
     filenames = {}
     for k in config.lm_obj_dict.keys():
-        #models[k] = FFB6D(n_classes=config.n_objects, n_pts=config.n_sample_points, rndla_cfg=rndla_cfg, trans_cfg=trans_cfg, n_kps=config.n_keypoints)
-        models[k] = FFB6D(n_classes=config.n_objects, n_pts=config.n_sample_points, rndla_cfg=rndla_cfg, n_kps=config.n_keypoints)
+        models[k] = FFB6D(n_classes=config.n_objects, n_pts=config.n_sample_points, rndla_cfg=rndla_cfg, trans_cfg=trans_cfg, n_kps=config.n_keypoints)
+        #models[k] = FFB6D(n_classes=config.n_objects, n_pts=config.n_sample_points, rndla_cfg=rndla_cfg, n_kps=config.n_keypoints)
         filenames[k] = base_best_path+str(k)+'_best.pth.tar'
 
     #model = FFB6D(    n_classes=config.n_objects, n_pts=config.n_sample_points, rndla_cfg=rndla_cfg, trans_cfg=trans_cfg, n_kps=config.n_keypoints)
@@ -238,8 +241,8 @@ def main():
 
         ori = oriboylist[0]
         for img in predicted_points_list:
-        #    imshow('ppoints: ',img)
-        #    waitKey()
+            #imshow('ppoints: ',img)
+            #waitKey()
             if np.count_nonzero(img) > 0:
                 ori = ori + img
 

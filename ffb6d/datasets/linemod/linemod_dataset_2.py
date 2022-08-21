@@ -325,6 +325,7 @@ class Dataset():
         #print(np.count_nonzero(labels_pt))
         pts = np.nonzero(labels_pt)
         #print(labels_pt[pts])
+        #todo: change self.cls_id to the value based on item_name
         np.put(labels_pt, pts, self.cls_id, mode='raise')
         #print('NACHI: post replacement')
         #print(labels_pt[pts])
