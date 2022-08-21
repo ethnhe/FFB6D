@@ -12,3 +12,4 @@ ffb6d/datasets/linemod/Linemod_preprocessed
 apex/
 normalSpeed/
 /ffb6d/train_log/
+/ffb6d/all_scalars.json
